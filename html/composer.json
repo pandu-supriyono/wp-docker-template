@@ -1,0 +1,23 @@
+{
+    "name": "supriyono/wp",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pandu Supriyono",
+            "email": "mail@supriyono.nl"
+        }
+    ],
+    "require": {
+        "roots/wordpress": "^6.7",
+        "roots/wordpress-core-installer": "^1.1"
+    },
+    "extra": {
+    	"wordpress-install-dir": "./"
+    },
+    "config": {
+        "allow-plugins": {
+            "roots/wordpress-core-installer": true
+        }
+    }
+}
