@@ -10,7 +10,8 @@
     ],
     "require": {
         "roots/wordpress": "^6.7",
-        "roots/wordpress-core-installer": "^1.1"
+        "roots/wordpress-core-installer": "^1.1",
+        "wp-cli/wp-cli-bundle": "^2.11"
     },
     "extra": {
     	"wordpress-install-dir": "./"
