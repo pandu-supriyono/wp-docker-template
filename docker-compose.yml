@@ -2,13 +2,42 @@ version: '3'
 
 services:
   php:
-    build: .
+    image: wodby/php:8.2
     container_name: php
+    environment:
+      PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
+      PHP_FPM_USER: wodby
+      PHP_FPM_GROUP: www-data
+      ## @see https://wodby.com/docs/stacks/drupal/local/#xdebug
+      ## Uncomment the following to use Xdebug
+      #PHP_XDEBUG: 1
+      #PHP_XDEBUG_MODE: debug
+      #PHP_XDEBUG_CLIENT_HOST: host.docker.internal
+      #PHP_XDEBUG_START_WITH_REQUEST: 1
+    volumes:
+      - ./html:/var/www/html
+      - ./docker-init/.env:/var/www/html/.env
+      ## For Xdebug profiler traces (to view with Xhprof or Webgrind).
+      # - files:/mnt/files
+
+  apache:
+    image: wodby/apache:2.4
+    depends_on:
+      - php
+    environment:
+      APACHE_LOG_LEVEL: info
+      APACHE_BACKEND_HOST: php
+      APACHE_VHOST_PRESET: php
+      APACHE_SERVER_ROOT: /var/www/html
     volumes:
       - ./html:/var/www/html
     ports:
-      - "${IP}:${PORT}:80"
+      - "${PORT}:80"
 
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 8025:8025
   pma:
     image: phpmyadmin:latest  # https://hub.docker.com/_/phpmyadmin
     environment:
@@ -21,9 +50,6 @@ services:
       - "${IP}:8080:80"  # Ensure that ${IP} is set or replace with an actual IP
     links:
       - db:db
-    volumes:
-      - ./config/pma_php.ini:/usr/local/etc/php/conf.d/conf.ini
-      - ./config/pma_config.php:/etc/phpmyadmin/config.user.inc.php
 
   db:
     image: mysql:8.0 # https://hub.docker.com/_/mysql/ - or mariadb https://hub.docker.com/_/mariadb
